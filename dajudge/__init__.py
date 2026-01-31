@@ -1,4 +1,4 @@
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 import os
 import re
@@ -13,17 +13,17 @@ _REPLACE_MAP = {
     'ャ': 'ヤ', 'ュ': 'ユ', 'ョ': 'ヨ',
     'ァ': 'ア', 'ィ': 'イ', 'ゥ': 'ウ', 'ェ': 'エ', 'ォ': 'オ'
 }
-_SYMBOL_PATTERN = re.compile(r'[。、,.！!・「」｣『』\s　]')
+_SYMBOL_PATTERN = re.compile(r'[^\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fff\s]')
 
 
 class Dajudge(int):
-    def __new__(cls, score: float, phrase: str = "", reading_length: int = 0):
+    def __new__(cls, score: float, phrase: str = "", length: int = 0):
         is_dajare = score >= 1.2
         instance = super().__new__(cls, is_dajare)
         instance.score = round(score, 2)
         instance.is_dajare = is_dajare
         instance.phrase = phrase
-        instance.reading_length = reading_length
+        instance.length = length
         return instance
 
     def __repr__(self):
@@ -68,7 +68,7 @@ def _compute_details(sentence: str) -> Dict[str, Any]:
 
     best_score = 0.0
     best_phrase = ""
-    best_len = 0
+    best_length = 0
 
     for n in (2, 3, 4):
         if total_length < n:
